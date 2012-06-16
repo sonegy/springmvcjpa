@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">	
+	
+	<bean id="localeChangeInterceptor"
+	    class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    <property name="paramName" value="lang" />
+	</bean>
+	 
+	<bean id="localeResolver"
+	    class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+	    <property name="defaultLocale" value="ko"/>
+	</bean>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="0" />
+        <property name="interceptors">
+	        <ref bean="localeChangeInterceptor" />
+        </property>
+    </bean>
+     
+<!--     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" /> -->
+    <bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
+<!-- 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"> -->
+<!-- 	  <property name="converters"> -->
+<!-- 	    <list> -->
+<!-- 	      <bean class="org.springframework.data.repository.support.DomainClassConverter"> -->
+<!-- 	        <constructor-arg ref="conversionService" /> -->
+<!-- 	      </bean> -->
+<!-- 	    </list> -->
+<!-- 	  </property> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="conversionService" -->
+<!-- 		class="org.springframework.core.convert.support.DefaultConversionService" /> -->
+<!-- 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> -->
+<!-- 		<property name="targetClass" -->
+<!-- 			value="org.springframework.core.convert.support.ConversionServiceFactory" /> -->
+<!-- 		<property name="targetMethod" value="registerConverters" /> -->
+<!-- 		<property name="arguments"> -->
+<!-- 			<util:list> -->
+<!-- 				<set> -->
+<!-- 					<bean class="org.springframework.data.repository.support.DomainClassConverter"> -->
+<!-- 						<constructor-arg ref="conversionService" /> -->
+<!-- 					</bean> -->
+<!-- 				</set> -->
+<!-- 				<ref bean="conversionService" /> -->
+<!-- 			</util:list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+<!--                 <property name="validator" ref="validator" /> -->
+                <property name="conversionService" ref="conversion-service"/>
+<!-- 		        <property name="propertyEditorRegistrars"> -->
+<!-- 		        	<bean class="org.springframework.data.repository.support.DomainClassPropertyEditorRegistrar" /> -->
+<!-- 		        </property> -->
+            </bean>
+        </property>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter" >
+                    <property name="writeAcceptCharset" value="false"/>
+                </bean>
+                <bean class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+                <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+<!--                <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />-->
+<!--               	<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" /> -->
+<!--                <bean class="org.springframework.http.converter.feed.AtomFeedHttpMessageConverter" />-->
+<!--                <bean class="org.springframework.http.converter.feed.RssChannelHttpMessageConverter" />-->
+            </list>
+        </property>
+        <property name="customArgumentResolver">
+      		<bean class="org.springframework.data.web.PageableArgumentResolver" />
+        </property>
+    </bean>
+</beans>
